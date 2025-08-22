@@ -1,0 +1,20 @@
+mysql> SELECT PNUMBER
+    -> FROM WORKS_ON
+    -> WHERE EMPLOYEEID IN (
+    ->     SELECT EMPLOYEEID
+    ->     FROM EMPLOYEE
+    ->     WHERE NAME = 'MOHAN LAL'
+    -> )
+    ->
+    -> UNION
+    ->
+    -> SELECT P.PNUMBER
+    -> FROM PROJECT P
+    -> JOIN DEPARTMENT D ON P.DNUMBER = D.DNUMBER
+    -> JOIN EMPLOYEE E ON D.MANAGERID = E.EMPLOYEEID
+    -> WHERE E.NAME = 'MOHAN LAL';
++---------+
+| PNUMBER |
++---------+
+|       1 |
++---------+

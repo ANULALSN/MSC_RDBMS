@@ -1,0 +1,114 @@
+1. Salary Statistics Calculation
+sql
+SELECT 
+    SUM(SALARY) AS SAL_SUM,
+    MAX(SALARY) AS SAL_MAX,
+    MIN(SALARY) AS SAL_MIN,
+    AVG(SALARY) AS SAL_AVG 
+FROM 
+    EMPLOYEE;
+Output:
+
+text
++----------+----------+----------+--------------+
+| SAL_SUM  | SAL_MAX  | SAL_MIN  | SAL_AVG      |
++----------+----------+----------+--------------+
+| 99250.00 | 21000.00 | 10000.00 | 16541.666667 |
++----------+----------+----------+--------------+
+
+2. Projects per Department (with error corrections)
+sql
+SELECT 
+    D.DNAME AS DEPT_NAME,
+    D.DNUMBER AS DEPT_NUMBER,
+    COUNT(P.PNUMBER) AS NUMBER_OF_PROJECTS 
+FROM 
+    DEPARTMENT D 
+LEFT JOIN 
+    PROJECT P ON D.DNUMBER = P.DNUMBER 
+GROUP BY 
+    D.DNAME, D.DNUMBER 
+ORDER BY 
+    D.DNUMBER;
+Output:
+
+text
++------------+-------------+--------------------+
+| DEPT_NAME  | DEPT_NUMBER | NUMBER_OF_PROJECTS |
++------------+-------------+--------------------+
+| CS         |         100 |                  1 |
+| RESEARCH   |         101 |                  2 |
+| ADMINISTRA |         102 |                  0 |
++------------+-------------+--------------------+
+
+3. Employees per Department
+sql
+SELECT 
+    D.DNAME AS DEPT_NAME,
+    D.DNUMBER AS DEPT_NUMBER,
+    COUNT(E.EMPLOYEEID) AS NUMBER_OF_EMPLOYEES 
+FROM 
+    DEPARTMENT D 
+LEFT JOIN 
+    EMPLOYEE E ON D.DNUMBER = E.DNUMBER 
+GROUP BY 
+    D.DNAME, D.DNUMBER 
+ORDER BY 
+    D.DNUMBER;
+Output:
+
+text
++------------+-------------+---------------------+
+| DEPT_NAME  | DEPT_NUMBER | NUMBER_OF_EMPLOYEES |
++------------+-------------+---------------------+
+| CS         |         100 |                   3 |
+| RESEARCH   |         101 |                   0 |
+| ADMINISTRA |         102 |                   3 |
++------------+-------------+---------------------+
+
+4. Departments with Minimum Salary > 10,000
+sql
+SELECT 
+    E.DNUMBER AS DEPT_NUMBER,
+    MAX(E.SALARY) AS MAX_SALARY 
+FROM 
+    EMPLOYEE E 
+GROUP BY 
+    E.DNUMBER 
+HAVING 
+    MIN(E.SALARY) > 10000;
+Output:
+
+text
++-------------+------------+
+| DEPT_NUMBER | MAX_SALARY |
++-------------+------------+
+|         102 |   21000.00 |
++-------------+------------+
+
+Supporting Data Tables
+DEPARTMENT Table
+sql
+SELECT * FROM DEPARTMENT;
+text
++------------+---------+-----------+----------------+
+| DNAME      | DNUMBER | MANAGERID | MGR_START_DATE |
++------------+---------+-----------+----------------+
+| CS         |     100 |       300 | 2025-07-09     |
+| RESEARCH   |     101 |       302 | 2023-12-10     |
+| ADMINISTRA |     102 |      NULL | 2022-10-01     |
++------------+---------+-----------+----------------+
+EMPLOYEE Table
+sql
+SELECT * FROM EMPLOYEE;
+text
++------------+------------+------------+--------------+--------+----------+-----------+---------+
+| NAME       | EMPLOYEEID | BIRTHDATE  | HOUSENAME    | GENDER | SALARY   | SUPER_EID | DNUMBER |
++------------+------------+------------+--------------+--------+----------+-----------+---------+
+| MOHAN LAL  |        300 | 2003-08-06 | MOHANABHAVAN | M      | 15000.00 |      NULL |     100 |
+| MAMOOTY    |        301 | 1997-12-01 | MAYABAZAR    | M      | 10000.00 |       300 |     100 |
+| SHOBHANA   |        302 | 1996-12-12 | SEVAMANDHIR  | F      | 15000.00 |       300 |     100 |
+| SURESH GOP |        303 | 2005-04-11 | RAJ BHAVAN   | F      | 21000.00 |      NULL |     102 |
+| PRANAV     |        304 | 2011-02-10 | CITILINE     | M      | 19000.00 |       303 |     102 |
+| PRITHVI    |        305 | 2014-11-11 | RAAJUNAGAR   | M      | 19250.00 |       303 |     102 |
++------------+------------+------------+--------------+--------+----------+-----------+---------+

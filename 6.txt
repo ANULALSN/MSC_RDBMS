@@ -1,0 +1,82 @@
+1.
+SELECT 
+    NAME,
+    EMPLOYEEID,
+    BIRTHDATE,
+    TIMESTAMPDIFF(YEAR, BIRTHDATE, CURDATE()) AS AGE,
+   
+FROM 
+    EMPLOYEE
+WHERE 
+    TIMESTAMPDIFF(YEAR, BIRTHDATE, CURDATE()) BETWEEN 25 AND 45
+ORDER BY 
+    AGE;
+
+OUTPUT:
++----------+------------+------------+------+
+| NAME     | EMPLOYEEID | BIRTHDATE  | AGE  |
++----------+------------+------------+------+
+| MAMOOTY  |        301 | 1997-12-01 |   27 |
+| SHOBHANA |        302 | 1996-12-12 |   28 |
++----------+------------+------------+------+
+2 rows in set (0.00 sec)
+
+2.
+
+-- 1. Initial query showing managers and their service periods (before update)
+SELECT 
+    E.EMPLOYEEID,
+    E.NAME AS MANAGER_NAME,
+    D.DNAME AS DEPARTMENT_NAME,
+    D.MGR_START_DATE AS START_DATE,
+    CONCAT(
+        TIMESTAMPDIFF(YEAR, D.MGR_START_DATE, '2030-01-01'), 'YEARS',
+        TIMESTAMPDIFF(MONTH, D.MGR_START_DATE, '2030-01-01') % 12, 'MONTHS'
+    ) AS SERVICE_PERIOD_IN_2030 
+FROM 
+    EMPLOYEE E 
+JOIN 
+    DEPARTMENT D ON E.EMPLOYEEID = D.MANAGERID 
+ORDER BY 
+    MGR_START_DATE;
+
+-- Output (before update):
+/*
++------------+--------------+-----------------+------------+------------------------+
+| EMPLOYEEID | MANAGER_NAME | DEPARTMENT_NAME | START_DATE | SERVICE_PERIOD_IN_2030 |
++------------+--------------+-----------------+------------+------------------------+
+|        302 | SHOBHANA     | RESEARCH        | 2023-12-10 | 6YEARS0MONTHS          |
+|        300 | MOHAN LAL    | CS              | 2025-07-09 | 4YEARS5MONTHS          |
++------------+--------------+-----------------+------------+------------------------+
+*/
+
+-- 2. Update to make SURESH GOP a manager
+UPDATE DEPARTMENT SET MANAGERID = 303 WHERE DNUMBER = 102;
+
+-- 3. Query after update showing all managers
+SELECT 
+    E.EMPLOYEEID,
+    E.NAME AS MANAGER_NAME,
+    D.DNAME AS DEPARTMENT_NAME,
+    D.MGR_START_DATE AS START_DATE,
+    CONCAT(
+        TIMESTAMPDIFF(YEAR, D.MGR_START_DATE, '2030-01-01'), 'YEARS',
+        TIMESTAMPDIFF(MONTH, D.MGR_START_DATE, '2030-01-01') % 12, 'MONTHS'
+    ) AS SERVICE_PERIOD_IN_2030 
+FROM 
+    EMPLOYEE E 
+JOIN 
+    DEPARTMENT D ON E.EMPLOYEEID = D.MANAGERID 
+ORDER BY 
+    MGR_START_DATE;
+
+-- Output (after update):
+/*
++------------+--------------+-----------------+------------+------------------------+
+| EMPLOYEEID | MANAGER_NAME | DEPARTMENT_NAME | START_DATE | SERVICE_PERIOD_IN_2030 |
++------------+--------------+-----------------+------------+------------------------+
+|        303 | SURESH GOP   | ADMINISTRA      | 2022-10-01 | 7YEARS3MONTHS          |
+|        302 | SHOBHANA     | RESEARCH        | 2023-12-10 | 6YEARS0MONTHS          |
+|        300 | MOHAN LAL    | CS              | 2025-07-09 | 4YEARS5MONTHS          |
++------------+--------------+-----------------+------------+------------------------+
+*/

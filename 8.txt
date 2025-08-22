@@ -1,0 +1,82 @@
+-- -------------------------------
+-- DEPENDENT Data
+-- -------------------------------
+INSERT INTO DEPENDENT VALUES(300,'RAHUL','M','2025-01-11','SON');
+INSERT INTO DEPENDENT VALUES(300,'MEENU','F','2025-01-11','DAUGHTER');
+INSERT INTO DEPENDENT VALUES(300,'MOHAN LAL','M','2003-08-06','SON');
+INSERT INTO DEPENDENT VALUES(301,'KRISHNA','F','2016-08-14','DAUGHTER');
+INSERT INTO DEPENDENT VALUES(302,'SAADHIKA','F','2026-08-24','DAUGHTER');
+
+-- -------------------------------
+-- Q1: Employees who have a dependent with the same name and same gender
+-- -------------------------------
+SELECT E.NAME
+FROM EMPLOYEE E
+JOIN DEPENDENT D ON E.EMPLOYEEID = D.EMPLOYEEID
+WHERE E.NAME = D.DEPENDNAME AND E.GENDER = D.SEX;
+
+-- Output:
+-- +-----------+
+-- | NAME      |
+-- +-----------+
+-- | MOHAN LAL |
+-- +-----------+
+-- 1 row in set
+
+-- -------------------------------
+-- Q2: Employees who have no dependents
+-- -------------------------------
+SELECT E.NAME
+FROM EMPLOYEE E
+WHERE E.EMPLOYEEID NOT IN (
+    SELECT D.EMPLOYEEID FROM DEPENDENT D
+);
+
+-- Output:
+-- +------------+
+-- | NAME       |
+-- +------------+
+-- | SURESH GOP |
+-- | PRANAV     |
+-- | PRITHVI    |
+-- +------------+
+-- 3 rows in set
+
+-- -------------------------------
+-- Q3: Managers who have at least one dependent
+-- -------------------------------
+SELECT E.NAME AS MGR_NAME
+FROM EMPLOYEE E
+JOIN DEPARTMENT D ON E.EMPLOYEEID = D.MANAGERID
+WHERE E.EMPLOYEEID IN (
+    SELECT EMPLOYEEID FROM DEPENDENT
+);
+
+-- Output:
+-- +-----------+
+-- | MGR_NAME  |
+-- +-----------+
+-- | MOHAN LAL |
+-- | SHOBHANA  |
+-- +-----------+
+-- 2 rows in set
+
+-- -------------------------------
+-- Q4: Employee and their immediate supervisor
+-- -------------------------------
+SELECT E.NAME AS EMPLOYEE_NAME, S.NAME AS SUPERVISOR_NAME
+FROM EMPLOYEE E
+LEFT JOIN EMPLOYEE S ON E.SUPER_EID = S.EMPLOYEEID;
+
+-- Output:
+-- +---------------+-----------------+
+-- | EMPLOYEE_NAME | SUPERVISOR_NAME |
+-- +---------------+-----------------+
+-- | MOHAN LAL     | NULL            |
+-- | MAMOOTY       | MOHAN LAL       |
+-- | SHOBHANA      | MOHAN LAL       |
+-- | SURESH GOP    | NULL            |
+-- | PRANAV        | SURESH GOP      |
+-- | PRITHVI       | SURESH GOP      |
+-- +---------------+-----------------+
+-- 6 rows in set

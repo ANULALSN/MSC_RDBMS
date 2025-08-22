@@ -1,0 +1,229 @@
+Q1. Create a procedure to generate all the prime numbers below the given number and count them
+DELIMITER $$
+
+CREATE PROCEDURE GeneratePrimes(IN limit_num INT)
+BEGIN
+    DECLARE i INT DEFAULT 2;
+    DECLARE j INT;
+    DECLARE isPrime BOOLEAN;
+    DECLARE prime_count INT DEFAULT 0;
+
+    DROP TEMPORARY TABLE IF EXISTS PrimeNumbers;
+    CREATE TEMPORARY TABLE PrimeNumbers (prime INT);
+
+    prime_loop: WHILE i < limit_num DO
+        SET j = 2;
+        SET isPrime = TRUE;
+
+        inner_loop: WHILE j <= SQRT(i) DO
+            IF i % j = 0 THEN
+                SET isPrime = FALSE;
+                LEAVE inner_loop;
+            END IF;
+            SET j = j + 1;
+        END WHILE inner_loop;
+
+        IF isPrime THEN
+            INSERT INTO PrimeNumbers VALUES(i);
+            SET prime_count = prime_count + 1;
+        END IF;
+
+        SET i = i + 1;
+    END WHILE prime_loop;
+
+    SELECT * FROM PrimeNumbers;
+    SELECT prime_count AS Total_Primes;
+END$$
+
+DELIMITER ;
+
+CALL GeneratePrimes(20);
+
++-------+
+| prime |
++-------+
+|     2 |
+|     3 |
+|     5 |
+|     7 |
+|    11 |
+|    13 |
+|    17 |
+|    19 |
++-------+
+8 rows in set (0.00 sec)
+
++--------------+
+| Total_Primes |
++--------------+
+|            8 |
++--------------+
+1 row in set (0.00 sec)
+
+Q2. Procedure to update salary of an employee & fetch top 5 highest-paid employees
+CREATE TABLE PR_EMPLOYEE(
+    EMP_ID INT PRIMARY KEY,
+    ENAME VARCHAR(10),
+    BASIC DECIMAL(10,2),
+    DEPT VARCHAR(20)
+);
+
+INSERT INTO PR_EMPLOYEE VALUES
+(1,"GOVIND",30000,'IT'),
+(2,"AYUSH",35000,'HR'),
+(3,"RAASHID",50000,'FINANCE'),
+(4,"ANU",45000,'IT'),
+(5,"LAL",50000,'FINANCE'),
+(6,"MEENA",28000,'HR'),
+(7,"RAJ",60000,'IT'),
+(8,"HARI",40000,'HR'),
+(9,"ARAVIND",47000,'FINANCE'),
+(10,"GOKUL",52000,'IT');
+
+CALL UPDATE_SAL(3, 10);   -- Increase RAASHID salary by 10%
+
++---------+----------+---------+
+| ENAME   | BASIC    | DEPT    |
++---------+----------+---------+
+| RAJ     | 60000.00 | IT      |
+| RAASHID | 55000.00 | FINANCE |
+| GOKUL   | 52000.00 | IT      |
+| LAL     | 50000.00 | FINANCE |
+| ARAVIND | 47000.00 | FINANCE |
++---------+----------+---------+
+5 rows in set (0.00 sec)
+
+Q3. Stored Procedure – Count of Orders by Status
+-- Step 1: Create Customer table
+CREATE TABLE CUSTOMER (
+    CUST_ID INT PRIMARY KEY,
+    CUST_NAME VARCHAR(20),
+    ADDRESS VARCHAR(30)
+);
+
+-- Step 2: Create Orders table
+CREATE TABLE ORDERS (
+    ORD_NO INT PRIMARY KEY,
+    CUST_ID INT,
+    ORD_DATE DATE,
+    SHIP_DATE DATE,
+    STATUS VARCHAR(10),
+    COMMENTS VARCHAR(20),
+    FOREIGN KEY (CUST_ID) REFERENCES CUSTOMER(CUST_ID)
+);
+
+-- Step 3: Insert records into Customer
+INSERT INTO CUSTOMER VALUES(1,'RAVI','KOCHI');
+INSERT INTO CUSTOMER VALUES(2,'VEENA','CALICUT');
+INSERT INTO CUSTOMER VALUES(3,'MEENA','BANGLORE');
+
+-- Step 4: Insert records into Orders
+INSERT INTO ORDERS VALUES(101,1,'2024-01-01','2024-01-05','DELIVERED','ON_TIME');
+INSERT INTO ORDERS VALUES(102,1,'2024-03-11',NULL,'PENDING','TB_SHIPPED');
+INSERT INTO ORDERS VALUES(103,2,'2024-03-14','2024-03-18','SHIPPED','SHP_VIA_DHL');
+INSERT INTO ORDERS VALUES(104,2,'2024-03-14',NULL,'CANCELLED','USER_REQ');
+INSERT INTO ORDERS VALUES(105,3,'2024-03-20','2024-03-29','DELIVERED','LATE');
+
+-- Step 5: Create Stored Procedure
+DELIMITER $$
+CREATE PROCEDURE ORDERSTATUSCOUNT()
+BEGIN
+    SELECT
+        SUM(CASE WHEN STATUS='DELIVERED' THEN 1 ELSE 0 END) AS DELIVERY_COUNT,
+        SUM(CASE WHEN STATUS='PENDING' THEN 1 ELSE 0 END)   AS PENDING_COUNT,
+        SUM(CASE WHEN STATUS='SHIPPED' THEN 1 ELSE 0 END)   AS SHIPPING_COUNT,
+        SUM(CASE WHEN STATUS='CANCELLED' THEN 1 ELSE 0 END) AS CANCELLED_COUNT
+    FROM ORDERS;
+END$$
+DELIMITER ;
+
+-- Step 6: Call the procedure
+CALL ORDERSTATUSCOUNT();
+
++----------------+---------------+----------------+-----------------+
+| DELIVERY_COUNT | PENDING_COUNT | SHIPPING_COUNT | CANCELLED_COUNT |
++----------------+---------------+----------------+-----------------+
+|              2 |             1 |              1 |               1 |
++----------------+---------------+----------------+-----------------+
+1 row in set (0.00 sec)
+
+Q4)Create a function to find the factorial of a number passed as parameter.
+-- Change delimiter so we can use multiple statements
+DELIMITER $$
+
+CREATE FUNCTION FACTORIAL_FN(n INT)
+RETURNS BIGINT
+DETERMINISTIC
+BEGIN
+    DECLARE result BIGINT DEFAULT 1;
+    DECLARE i INT DEFAULT 1;
+
+    -- Factorial not defined for negative numbers
+    IF n < 0 THEN
+        RETURN NULL;
+    END IF;
+
+    -- Loop from 1 to n and multiply
+    WHILE i <= n DO
+        SET result = result * i;
+        SET i = i + 1;
+    END WHILE;
+
+    RETURN result;
+END$$
+
+DELIMITER ;
+
+-- ✅ Test the function
+SELECT FACTORIAL_FN(5) AS FACT_5,
+       FACTORIAL_FN(0) AS FACT_0,
+       FACTORIAL_FN(10) AS FACT_10;
+
++--------+--------+----------+
+| FACT_5 | FACT_0 | FACT_10  |
++--------+--------+----------+
+|    120 |      1 | 3628800  |
++--------+--------+----------+
+
+
+Q5) Write a function to check a number is perfect, abundant or deficient.
+DELIMITER $$
+
+CREATE FUNCTION CHECK_NUMBER_TYPE(n INT)
+RETURNS VARCHAR(20)
+DETERMINISTIC
+BEGIN
+    DECLARE sum_div INT DEFAULT 0;
+    DECLARE i INT DEFAULT 1;
+
+    -- Loop through divisors
+    WHILE i <= n/2 DO
+        IF n % i = 0 THEN
+            SET sum_div = sum_div + i;
+        END IF;
+        SET i = i + 1;
+    END WHILE;
+
+    -- Compare sum of divisors
+    IF sum_div = n THEN
+        RETURN 'PERFECT';
+    ELSEIF sum_div > n THEN
+        RETURN 'ABUNDANT';
+    ELSE
+        RETURN 'DEFICIENT';
+    END IF;
+END$$
+
+DELIMITER ;
+
+-- ✅ Test the function
+SELECT CHECK_NUMBER_TYPE(6) AS NUM_6,
+       CHECK_NUMBER_TYPE(12) AS NUM_12,
+       CHECK_NUMBER_TYPE(8) AS NUM_8;
+
++--------+----------+-----------+
+| NUM_6  | NUM_12   | NUM_8     |
++--------+----------+-----------+
+| PERFECT| ABUNDANT | DEFICIENT |
++--------+----------+-----------+
+

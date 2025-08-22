@@ -1,0 +1,29 @@
+SQL Query and Results
+
+1. Employees Whose Names Start with 'M'
+sql
+SELECT * FROM EMPLOYEE WHERE NAME LIKE 'M%';
+Output:
+
+text
++-----------+------------+------------+--------------+--------+----------+-----------+---------+
+| NAME      | EMPLOYEEID | BIRTHDATE  | HOUSENAME    | GENDER | SALARY   | SUPER_EID | DNUMBER |
++-----------+------------+------------+--------------+--------+----------+-----------+---------+
+| MOHAN LAL |        300 | 2003-08-06 | MOHANABHAVAN | M      | 15000.00 |      NULL |     100 |
+| MAMOOTY   |        301 | 1997-12-01 | MAYABAZAR    | M      | 10000.00 |       300 |     100 |
++-----------+------------+------------+--------------+--------+----------+-----------+---------+
+2 rows in set
+
+2. Employees Born in the 1990s (1990-1999)
+sql
+SELECT * FROM EMPLOYEE WHERE BIRTHDATE LIKE '199%';
+Output:
+
+text
++----------+------------+------------+-------------+--------+----------+-----------+---------+
+| NAME     | EMPLOYEEID | BIRTHDATE  | HOUSENAME   | GENDER | SALARY   | SUPER_EID | DNUMBER |
++----------+------------+------------+-------------+--------+----------+-----------+---------+
+| MAMOOTY  |        301 | 1997-12-01 | MAYABAZAR   | M      | 10000.00 |       300 |     100 |
+| SHOBHANA |        302 | 1996-12-12 | SEVAMANDHIR | F      | 15000.00 |       300 |     100 |
++----------+------------+------------+-------------+--------+----------+-----------+---------+
+2 rows in set

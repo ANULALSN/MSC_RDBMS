@@ -1,0 +1,79 @@
+
+-- Q1. Create a view to display the department no, minimum salary, maximum salary and average salary in each department.
+CREATE VIEW DEPT_SALARY_STATS AS
+SELECT DNUMBER, 
+       MIN(SALARY) AS MIN_SALARY, 
+       MAX(SALARY) AS MAX_SALARY, 
+       AVG(SALARY) AS AVG_SALARY
+FROM EMPLOYEE
+GROUP BY DNUMBER;
+
+-- Output:
+-- +---------+------------+------------+------------+
+-- | DNUMBER | MIN_SALARY | MAX_SALARY | AVG_SALARY |
+-- +---------+------------+------------+------------+
+-- |     100 |   10000.00 |   15000.00 | 13333.3333 |
+-- |     102 |   19000.00 |   21000.00 | 19750.0000 |
+-- +---------+------------+------------+------------+
+
+-- Q2. Create a view displaying the employee name, project name, and hours worked by her/him.
+CREATE VIEW HOURS_WORKED AS
+SELECT 
+    E.NAME AS EMPLOYEE_NAME, 
+    P.PNAME AS PROJECT_NAME, 
+    W.HOURS AS WORK_HOURS
+FROM EMPLOYEE E
+JOIN WORKS_ON W ON E.EMPLOYEEID = W.EMPLOYEEID
+JOIN PROJECT P ON W.PNUMBER = P.PNUMBER;
+
+-- Output:
+-- +---------------+--------------+------------+
+-- | EMPLOYEE_NAME | PROJECT_NAME | WORK_HOURS |
+-- +---------------+--------------+------------+
+-- | PRANAV        | MECH         |         19 |
+-- | SURESH GOP    | MECH         |         11 |
+-- | SHOBHANA      | CYBERSECUR   |         18 |
+-- | PRITHVI       | CYBERSECUR   |          8 |
+-- | PRITHVI       | MECH         |          2 |
+-- +---------------+--------------+------------+
+
+-- Q3. Update the project name from 'MECH' to 'PRODUCT Y'
+UPDATE PROJECT 
+SET PNAME = 'PRODUCT Y' 
+WHERE PNAME = 'MECH';
+
+-- Output:
+-- +-------------+---------+------------+---------+
+-- | PNAME       | PNUMBER | PLOCATION  | DNUMBER |
+-- +-------------+---------+------------+---------+
+-- | AI/ML       |       1 | KERALA     |     100 |
+-- | CYBERSECUR  |       2 | BANGLORE   |     101 |
+-- | PRODUCT Y   |       3 | COIMBATORE |     101 |
+-- +-------------+---------+------------+---------+
+
+-- Q4. Drop the HOURS_WORKED view.
+DROP VIEW HOURS_WORKED;
+
+-- Output:
+-- Query OK, 0 rows affected (0.00 sec)
+
+-- Q5. Create a view WORK_INFO to display the employee ID, name, and project number of all employees whose working hour is greater than 0
+CREATE VIEW WORK_INFO AS
+SELECT 
+    E.EMPLOYEEID AS EID,
+    E.NAME AS NAME,
+    W.PNUMBER AS PROJ_NUM
+FROM EMPLOYEE E
+JOIN WORKS_ON W ON E.EMPLOYEEID = W.EMPLOYEEID
+WHERE W.HOURS > 0;
+
+-- Output:
+-- +-----+------------+----------+
+-- | EID | NAME       | PROJ_NUM |
+-- +-----+------------+----------+
+-- | 304 | PRANAV     |        3 |
+-- | 303 | SURESH GOP |        3 |
+-- | 302 | SHOBHANA   |        2 |
+-- | 305 | PRITHVI    |        2 |
+-- | 305 | PRITHVI    |        3 |
+-- +-----+------------+----------+

@@ -1,0 +1,42 @@
+-- 1. Update salaries >10000 to 15000
+UPDATE EMPLOYEE SET SALARY = 15000 WHERE SALARY > 10000;
+
+-- 2. Move project P1 (ID 1) from department 100 to 101
+UPDATE PROJECT SET DNUMBER = 101 WHERE PNUMBER = 1 AND DNUMBER = 100;
+
+-- 3. Delete employees working on project P1 (ID 1)
+DELETE FROM WORKS_ON WHERE PNUMBER = 1;
+
+-- Verify departments
+SELECT * FROM DEPARTMENT;
+
+-- Verify employees
+SELECT * FROM EMPLOYEE;
+
+-- Verify projects
+SELECT * FROM PROJECT;
+
+-- Verify works_on assignments
+SELECT * FROM WORKS_ON;
+
++-----------+------------+------------+--------------+--------+----------+-----------+---------+
+| NAME      | EMPLOYEEID | BIRTHDATE  | HOUSENAME    | GENDER | SALARY   | SUPER_EID | DNUMBER |
++-----------+------------+------------+--------------+--------+----------+-----------+---------+
+| MOHAN LAL |        300 | 2003-08-06 | MOHANABHAVAN | M      | 15000.00 |      NULL |     100 |
+| MAMOOTY   |        301 | 1997-12-01 | MAYABAZAR    | M      | 10000.00 |       300 |     100 |
+| SHOBHANA  |        302 | 1996-12-12 | SEVAMANDHIR  | F      | 15000.00 |       300 |     100 |
++-----------+------------+------------+--------------+--------+----------+-----------+---------+
+
++------------+---------+------------+---------+
+| PNAME      | PNUMBER | PLOCATION  | DNUMBER |
++------------+---------+------------+---------+
+| AI/ML      |       1 | KERALA     |     101 |
+| CYBERSEC.. |       2 | BANGLORE   |     100 |
+| RMETHODOL  |       3 | COIMBATORE |     101 |
++------------+---------+------------+---------+
+
++------------+---------+-------+
+| EMPLOYEEID | PNUMBER | HOURS |
++------------+---------+-------+
+|        302 |       2 |    18 |
++------------+---------+-------+
